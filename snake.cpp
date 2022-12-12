@@ -1,6 +1,7 @@
+#include <iostream>
+#include <stdlib.h>
 
 #include "snake.h"
-#include <iostream>
 
 void Snake::run()
 {
@@ -12,21 +13,10 @@ void Snake::run()
 
 Snake::Snake()
 {
-    std::unordered_set<std::pair<int, int>> occupied;
 
     for(auto& pos : snake_body)
     {
         grid[pos.first][pos.second] = 1;
-        occupied.insert(pos);
-    }
-
-    for(int i = 0; i < grid_size; i++) {
-        for(int j = 0; j < grid_size; j++) {
-            std::pair<int, int> pair(i, j);
-            if(!occupied.contains(pair)) {
-                free_spaces.insert(pair);
-            }
-        }
     }
 
     grid[food.first][food.second] = 2;
@@ -64,7 +54,6 @@ void Snake::move()
 
     snake_body.push_front(curr);
     grid[x][y] = 1;
-    free_spaces.erase(curr);
 
     if(x == food.first && y == food.second)
     {
@@ -75,13 +64,30 @@ void Snake::move()
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
         grid[last.first][last.second] = 0;
-        free_spaces.insert(last);
     }
 }
 
 void Snake::spawn_food_random()
 {
-    
+    std::vector<std::pair<int, int>> free_spaces = get_free_spaces();
+    int random_idx = rand() % free_spaces.size();
+    food = free_spaces.at(random_idx);
+    grid[food.first][food.second] = 2;
+}
+
+std::vector<std::pair<int, int>> Snake::get_free_spaces()
+{
+    std::vector<std::pair<int, int>> free_spaces;
+
+    for(int i = 0; i < grid_size; i++) {
+        for(int j = 0; j < grid_size; j++) {
+            if(grid[i][j] == 0) {
+                free_spaces.push_back(std::make_pair(i, j));
+            }
+        }
+    }
+
+    return free_spaces;
 }
 
 void Snake::get_input()

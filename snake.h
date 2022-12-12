@@ -1,13 +1,13 @@
 #include <deque>
 #include <unordered_map>
 #include <utility>
-#include <unordered_set>
+#include <vector>
 
 class Snake
 {
     private:
         // quadratic grid size
-        int grid_size = 20;
+        const int grid_size = 20;
 
         // saves state of the grid
         int grid[20][20] = {0};
@@ -37,9 +37,6 @@ class Snake
         // food
         std::pair<int, int> food = std::make_pair(10, 10);
 
-        // keep track of free spaces for food placement, "performance enhancement"
-        std::unordered_set<std::pair<int, int>> free_spaces;
-
         // functions
 
         // show board
@@ -47,6 +44,8 @@ class Snake
 
         // spawn food at empty and random location
         void spawn_food_random();
+
+        std::vector<std::pair<int, int>> get_free_spaces();
 
         // get last keyboard input
         void get_input();
