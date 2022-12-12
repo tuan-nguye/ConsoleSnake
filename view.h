@@ -10,12 +10,26 @@ class View
         // console cursor offset
         std::pair<int, int> cursor_offset;
 
+        // offset for score
+        std::pair<int, int> score_offset;
+
         int grid_size = 20;
 
         // reset cursor
         void set_cursor_pos(int x, int y);
 
         std::pair<int, int> get_cursor_pos();
+
+        // every good game needs a proper start screen
+        void show_start_screen();
+
+        // game over
+        void show_end_screen();
+
+        // show board
+        void show_grid(int grid[20][20]);
+        
+        void set_cursor_visibility(bool visible);
 
     public:
         View();
@@ -26,20 +40,12 @@ class View
             snake = 219, food = 177
         };
 
-        // every good game needs a proper start screen
-        void show_start_screen();
+        void start(int grid[20][20]);
+        void end();        
 
-        // game over
-        void show_end_screen();
-
-        // update the view, calling multiple instances
-        void update_view(int grid[20][20], int score);
-
-        // show board
-        void show_grid(int grid[20][20]);
-
+        // update single cells
+        void update_cell(int x, int y, int char_code);
+        
         // show score for extra motivation
         void show_score(int score);
-        
-        void set_cursor_visibility(bool visible);
 };

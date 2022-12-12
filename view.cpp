@@ -11,7 +11,23 @@
 
 View::View()
 {
-    cursor_offset = get_cursor_pos(); 
+    cursor_offset = get_cursor_pos();
+    score_offset = std::make_pair(cursor_offset.first, cursor_offset.second+grid_size+2);
+    cursor_offset.first++;
+    cursor_offset.second++;
+}
+
+void View::start(int grid[20][20])
+{
+    set_cursor_visibility(false);
+    show_start_screen();
+    show_grid(grid);
+}
+
+void View::end()
+{
+    show_end_screen();
+    set_cursor_visibility(true);
 }
 
 void View::show_start_screen()
@@ -52,23 +68,19 @@ void View::show_start_screen()
 
 void View::show_end_screen()
 {
+    set_cursor_pos(score_offset.first, score_offset.second+1);
     std::cout << "R I P B O Z O" << '\n';
     std::cout << "Press any to exit" << std::endl;
     getch();
 }
 
-void View::update_view(int grid[20][20], int score)
-{
-    set_cursor_pos(cursor_offset.first, cursor_offset.second);
-    show_grid(grid);
-    show_score(score);
-}
-
 void View::show_grid(int grid[20][20])
 {
+    set_cursor_pos(cursor_offset.first-1, cursor_offset.second-1);
+
     std::string out;
     out += char(chars::corner_up_left);
-    out.append(grid_size*2, char(205));
+    out.append(grid_size*2, char(chars::horizontal_bar));
     out += char(chars::corner_up_right);
     out += '\n';
 
@@ -93,8 +105,19 @@ void View::show_grid(int grid[20][20])
     std::cout << out << std::endl;
 }
 
+void View::update_cell(int x, int y, int char_code)
+{
+    if(x < 0 || x >= grid_size || y < 0 || y >= grid_size) return;
+
+    char c = char(char_code);
+    set_cursor_pos(cursor_offset.first+y*2, cursor_offset.second+x);
+    std::cout << c << c;
+    std::cout.flush();
+}
+
 void View::show_score(int score)
 {
+    set_cursor_pos(score_offset.first, score_offset.second);
     std::cout << "Score: " << score << std::endl;
 }
 

@@ -8,34 +8,29 @@
 
 void Snake::run()
 {
-    view.set_cursor_visibility(false);
-    view.show_start_screen();
+    view.start(grid);
+    spawn_food_random();
 
     while(!dead) {
         // update direction, from user input or keep if no key was pressed
         update_direction();
         // move snake by one cell and react to cases: food, snake, empty cell
         move();
-        // update the view on the console
-        view.update_view(grid, score());
+        // update score
+        view.show_score(score());
         // sleep depending on the speed variable
         sleep();
     }
 
-    view.show_end_screen();
-    view.set_cursor_visibility(true);
+    view.end();
 }
 
 Snake::Snake()
 {
-    spawn_food_random();
-
     for(auto& pos : snake_body)
     {
         grid[pos.first][pos.second] = 1;
     }
-
-    grid[food.first][food.second] = 2;
 }
 
 void Snake::move()
@@ -54,6 +49,7 @@ void Snake::move()
 
     snake_body.push_front(curr);
     grid[x][y] = 1;
+    view.update_cell(x, y, View::chars::snake);
 
     if(x == food.first && y == food.second)
     {
@@ -63,6 +59,7 @@ void Snake::move()
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
         grid[last.first][last.second] = 0;
+        view.update_cell(last.first, last.second, View::chars::empty);
     }
 }
 
@@ -77,6 +74,7 @@ void Snake::spawn_food_random()
     int random_idx = rand() % free_spaces.size();
     food = free_spaces.at(random_idx);
     grid[food.first][food.second] = 2;
+    view.update_cell(food.first, food.second, View::chars::food);
 }
 
 std::vector<std::pair<int, int>> Snake::get_free_spaces()
