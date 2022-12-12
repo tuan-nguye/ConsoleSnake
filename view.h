@@ -19,6 +19,12 @@ class View
 
     public:
         View();
+        
+        enum chars {
+            corner_up_left = 201, corner_up_right = 187, corner_down_left = 200, corner_down_right = 188,
+            horizontal_bar = 205, vertical_bar = 186, empty = 32,
+            snake = 219, food = 177
+        };
 
         // every good game needs a proper start screen
         void show_start_screen();
