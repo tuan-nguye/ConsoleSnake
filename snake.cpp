@@ -22,7 +22,7 @@ void Snake::run()
         sleep();
     }
 
-    std::cout << "R I P B O Z O" << '\n';
+    view.show_end_screen();
     view.set_cursor_visibility(true);
 }
 

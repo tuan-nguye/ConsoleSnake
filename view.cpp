@@ -50,6 +50,13 @@ void View::show_start_screen()
     std::cout << clear << std::endl;
 }
 
+void View::show_end_screen()
+{
+    std::cout << "R I P B O Z O" << '\n';
+    std::cout << "Press any to exit" << std::endl;
+    getch();
+}
+
 void View::update_view(int grid[20][20], int score)
 {
     set_cursor_pos(cursor_offset.first, cursor_offset.second);
@@ -59,24 +66,30 @@ void View::update_view(int grid[20][20], int score)
 
 void View::show_grid(int grid[20][20])
 {
-    std::string out((grid_size+1)*2, '_');
+    std::string out;
+    out += char(201);
+    out.append(grid_size*2, char(205));
+    out += char(187);
     out += '\n';
 
     for(int i = 0; i < grid_size; i++)
     {
-        out += '|';
+        out += char(186);
 
         for(int j = 0; j < grid_size; j++)
         {
             if(grid[i][j] == 0) out += "  ";
-            else if(grid[i][j] == 1) out += "[]";
-            else if(grid[i][j] == 2) out += "@@";
+            else if(grid[i][j] == 1) out.append(2, char(219));
+            else if(grid[i][j] == 2) out.append(2, char(177));
         }
 
-        out += "|\n";
+        out += char(186);
+        out += '\n';
     }
 
-    out.append((grid_size+1)*2, '-');
+    out += char(200);
+    out.append(grid_size*2, char(205));
+    out += char(188);
     std::cout << out << std::endl;
 }
 

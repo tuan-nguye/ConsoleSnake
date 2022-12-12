@@ -23,6 +23,9 @@ class View
         // every good game needs a proper start screen
         void show_start_screen();
 
+        // game over
+        void show_end_screen();
+
         // update the view, calling multiple instances
         void update_view(int grid[20][20], int score);
 
