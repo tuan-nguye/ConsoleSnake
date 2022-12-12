@@ -27,8 +27,16 @@ class Snake
         std::unordered_map<char, std::pair<int, int>> dir_map = {
             {'l', std::make_pair(0, -1)},
             {'r', std::make_pair(0, 1)},
-            {'u', std::make_pair(1, 0)},
-            {'d', std::make_pair(-1, 0)}
+            {'u', std::make_pair(-1, 0)},
+            {'d', std::make_pair(1, 0)}
+        };
+
+        // player input map
+        std::unordered_map<char, char> input_map = {
+            {'w', 'u'},
+            {'a', 'l'},
+            {'s', 'd'},
+            {'d', 'r'}
         };
 
         // speed
@@ -47,17 +55,22 @@ class Snake
 
         std::vector<std::pair<int, int>> get_free_spaces();
 
-        // get last keyboard input
-        void get_input();
-
         // update direction using last input
         void update_direction();
 
         // update position()
         void move();
 
+        bool opposite_direction(char c);
+
+        // modulo so that negative numbers dont mess up my code
+        int mod(int a, int b);
+
         // reset cursor
         void reset_cursor();
+
+        // sleep
+        void sleep();
     public:
         Snake();
         void run();

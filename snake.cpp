@@ -1,13 +1,19 @@
 #include <iostream>
 #include <stdlib.h>
+#include <conio.h>
+#include <cctype>
+#include <chrono>
+#include <thread>
 
 #include "snake.h"
 
 void Snake::run()
 {
-    for(int i = 0; i < 10; i++) {
-        show();
+    while(true) {
+        update_direction();
         move();
+        show();
+        sleep();
     }
 }
 
@@ -49,7 +55,7 @@ void Snake::move()
 {
     std::pair<int, int> head = snake_body.front();
     std::pair<int, int> dir = dir_map[curr_dir];
-    int x = head.first+dir.first, y = head.second+dir.second;
+    int x = mod(head.first+dir.first, grid_size), y = mod(head.second+dir.second, grid_size);
     std::pair<int, int> curr(x, y);
 
     snake_body.push_front(curr);
@@ -57,14 +63,18 @@ void Snake::move()
 
     if(x == food.first && y == food.second)
     {
-        food.first = -1;
-        food.second = -1;
+        spawn_food_random();
     } else
     {
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
         grid[last.first][last.second] = 0;
     }
+}
+
+int Snake::mod(int a, int b)
+{
+    return (a%b + b) % b;
 }
 
 void Snake::spawn_food_random()
@@ -90,12 +100,27 @@ std::vector<std::pair<int, int>> Snake::get_free_spaces()
     return free_spaces;
 }
 
-void Snake::get_input()
-{
-
-}
-
 void Snake::update_direction()
 {
+    if(!kbhit()) return;
+    char input = std::tolower(getch());
+    if(input_map.count(input) == 0) return;
+    if(opposite_direction(input_map[input])) return;
+    curr_dir = input_map[input];
+}
 
+bool Snake::opposite_direction(char c)
+{
+    if(c == 'l') return curr_dir == 'r';
+    else if(c == 'r') return curr_dir == 'l';
+    else if(c == 'u') return curr_dir == 'd';
+    else if(c == 'd') return curr_dir == 'u';
+
+    return false;
+}
+
+void Snake::sleep()
+{
+    std::chrono::milliseconds timespan(1000/speed);
+    std::this_thread::sleep_for(timespan);
 }
