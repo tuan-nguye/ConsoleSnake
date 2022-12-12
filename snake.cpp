@@ -1,18 +1,15 @@
-#include <iostream>
 #include <stdlib.h>
 #include <conio.h>
-#include <cctype>
 #include <chrono>
 #include <thread>
-#include <fstream>
-#include <windows.h>
+#include <iostream>
 
 #include "snake.h"
 
 void Snake::run()
 {
-    set_cursor_visibility(false);
-    show_start_screen();
+    view.set_cursor_visibility(false);
+    view.show_start_screen();
 
     while(!dead) {
         // update direction, from user input or keep if no key was pressed
@@ -20,13 +17,13 @@ void Snake::run()
         // move snake by one cell and react to cases: food, snake, empty cell
         move();
         // update the view on the console
-        update_view();
+        view.update_view(grid, score());
         // sleep depending on the speed variable
         sleep();
     }
 
     std::cout << "R I P B O Z O" << '\n';
-    set_cursor_visibility(true);
+    view.set_cursor_visibility(true);
 }
 
 Snake::Snake()
@@ -39,79 +36,6 @@ Snake::Snake()
     }
 
     grid[food.first][food.second] = 2;
-
-    cursor_offset = get_cursor_pos();
-}
-
-void Snake::show_start_screen()
-{
-    // TODO cool animation instead of just printing
-    std::ifstream img_txt(start_img_path);
-    std::string line;
-    int width = 0;
-
-    if(img_txt.is_open())
-    {
-        while(std::getline(img_txt, line))
-        {
-            std::cout << line << '\n';
-            width = line.length();
-        }
-        std::cout.flush();
-    }
-
-    img_txt.close();
-
-    std::cout << "Press any key to continue" << std::endl;
-    std::cout << "Controls: wasd" << std::endl;
-
-    // clear starting screen
-    getch();
-    set_cursor_pos(cursor_offset.first, cursor_offset.second);
-    std::string clear_line(width, ' ');
-    std::string clear;
-
-    for(int i = 0; i < grid_size; i++)
-    {
-        clear += clear_line + '\n';
-    }
-
-    std::cout << clear << std::endl;
-}
-
-void Snake::update_view()
-{
-    set_cursor_pos(cursor_offset.first, cursor_offset.second);
-    show_grid();
-    show_score();
-}
-
-void Snake::show_grid()
-{
-    std::string out((grid_size+1)*2, '_');
-    out += '\n';
-
-    for(int i = 0; i < grid_size; i++)
-    {
-        out += '|';
-
-        for(int j = 0; j < grid_size; j++)
-        {
-            if(grid[i][j] == 0) out += "  ";
-            else if(grid[i][j] == 1) out += "[]";
-            else if(grid[i][j] == 2) out += "@@";
-        }
-
-        out += "|\n";
-    }
-
-    out.append((grid_size+1)*2, '-');
-    std::cout << out << std::endl;
-}
-
-void Snake::show_score()
-{
-    std::cout << "Score: " << (snake_body.size()-3) * 10 << std::endl;
 }
 
 void Snake::move()
@@ -189,37 +113,13 @@ bool Snake::opposite_direction(char c)
     return false;
 }
 
-void Snake::set_cursor_pos(int x, int y)
-{
-    COORD cursor_pos;
-    cursor_pos.X = x;
-    cursor_pos.Y = y;
-    if(!SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor_pos))
-    {
-        exit(-2);
-    }
-
-}
-
-std::pair<int, int> Snake::get_cursor_pos()
-{
-    CONSOLE_SCREEN_BUFFER_INFO csbi = {};
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    COORD coord = csbi.dwCursorPosition;
-    return std::make_pair(coord.X, coord.Y);
-}
-
-void Snake::set_cursor_visibility(bool visible)
-{
-    CONSOLE_CURSOR_INFO cci;
-    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleCursorInfo(out, &cci);
-    cci.bVisible = visible;
-    SetConsoleCursorInfo(out, &cci);
-}
-
 void Snake::sleep()
 {
     std::chrono::milliseconds timespan(1000/speed);
     std::this_thread::sleep_for(timespan);
+}
+
+int Snake::score()
+{
+    return (snake_body.size()-3) * 10;
 }

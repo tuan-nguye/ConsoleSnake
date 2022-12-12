@@ -4,9 +4,14 @@
 #include <vector>
 #include <string>
 
+#include "view.h"
+
 class Snake
 {
     private:
+        // cant play a game you cant see
+        View view;
+
         // quadratic grid size
         const int grid_size = 20;
 
@@ -49,25 +54,7 @@ class Snake
         // food
         std::pair<int, int> food;
 
-        // ascii art txt
-        std::string start_img_path = "ascii-art-snek.txt";
-
-        // console cursor offset
-        std::pair<int, int> cursor_offset;
-
         // functions
-
-        // what would a game without a proper start screen be
-        void show_start_screen();
-
-        // update the view, calling multiple instances
-        void update_view();
-
-        // show board
-        void show_grid();
-
-        // show score for extra motivation
-        void show_score();
 
         // spawn food at empty and random location
         void spawn_food_random();
@@ -85,15 +72,11 @@ class Snake
         // modulo so that negative numbers dont mess up my code
         int mod(int a, int b);
 
-        // reset cursor
-        void set_cursor_pos(int x, int y);
-
-        std::pair<int, int> get_cursor_pos();
-
-        void set_cursor_visibility(bool visible);
-
         // sleep
         void sleep();
+
+        // calculate score
+        int score();
     public:
         Snake();
         void run();
