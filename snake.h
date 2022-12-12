@@ -90,6 +90,8 @@ class Snake
 
         std::pair<int, int> get_cursor_pos();
 
+        void set_cursor_visibility(bool visible);
+
         // sleep
         void sleep();
     public:

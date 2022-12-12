@@ -11,7 +11,7 @@
 
 void Snake::run()
 {
-
+    set_cursor_visibility(false);
     show_start_screen();
 
     while(!dead) {
@@ -26,6 +26,7 @@ void Snake::run()
     }
 
     std::cout << "R I P B O Z O" << '\n';
+    set_cursor_visibility(true);
 }
 
 Snake::Snake()
@@ -61,8 +62,8 @@ void Snake::show_start_screen()
 
     img_txt.close();
 
-    std::cout << "width: " << width << std::endl;
     std::cout << "Press any key to continue" << std::endl;
+    std::cout << "Controls: wasd" << std::endl;
 
     // clear starting screen
     getch();
@@ -206,6 +207,15 @@ std::pair<int, int> Snake::get_cursor_pos()
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     COORD coord = csbi.dwCursorPosition;
     return std::make_pair(coord.X, coord.Y);
+}
+
+void Snake::set_cursor_visibility(bool visible)
+{
+    CONSOLE_CURSOR_INFO cci;
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleCursorInfo(out, &cci);
+    cci.bVisible = visible;
+    SetConsoleCursorInfo(out, &cci);
 }
 
 void Snake::sleep()
