@@ -52,13 +52,19 @@ class Snake
         // ascii art txt
         std::string start_img_path = "ascii-art-snek.txt";
 
+        // console cursor offset
+        std::pair<int, int> cursor_offset;
+
         // functions
 
         // what would a game without a proper start screen be
         void show_start_screen();
 
+        // update the view, calling multiple instances
+        void update_view();
+
         // show board
-        void show();
+        void show_grid();
 
         // show score for extra motivation
         void show_score();
@@ -80,7 +86,9 @@ class Snake
         int mod(int a, int b);
 
         // reset cursor
-        void reset_cursor();
+        void set_cursor_pos(int x, int y);
+
+        std::pair<int, int> get_cursor_pos();
 
         // sleep
         void sleep();

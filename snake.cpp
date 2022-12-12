@@ -5,18 +5,23 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <windows.h>
 
 #include "snake.h"
 
 void Snake::run()
 {
+
     show_start_screen();
 
     while(!dead) {
+        // update direction, from user input or keep if no key was pressed
         update_direction();
+        // move snake by one cell and react to cases: food, snake, empty cell
         move();
-        show();
-        show_score();
+        // update the view on the console
+        update_view();
+        // sleep depending on the speed variable
         sleep();
     }
 
@@ -33,29 +38,54 @@ Snake::Snake()
     }
 
     grid[food.first][food.second] = 2;
+
+    cursor_offset = get_cursor_pos();
 }
 
 void Snake::show_start_screen()
 {
+    // TODO cool animation instead of just printing
     std::ifstream img_txt(start_img_path);
     std::string line;
+    int width = 0;
 
     if(img_txt.is_open())
     {
         while(std::getline(img_txt, line))
         {
             std::cout << line << '\n';
+            width = line.length();
         }
         std::cout.flush();
     }
 
     img_txt.close();
 
+    std::cout << "width: " << width << std::endl;
     std::cout << "Press any key to continue" << std::endl;
+
+    // clear starting screen
     getch();
+    set_cursor_pos(cursor_offset.first, cursor_offset.second);
+    std::string clear_line(width, ' ');
+    std::string clear;
+
+    for(int i = 0; i < grid_size; i++)
+    {
+        clear += clear_line + '\n';
+    }
+
+    std::cout << clear << std::endl;
 }
 
-void Snake::show()
+void Snake::update_view()
+{
+    set_cursor_pos(cursor_offset.first, cursor_offset.second);
+    show_grid();
+    show_score();
+}
+
+void Snake::show_grid()
 {
     std::string out((grid_size+1)*2, '_');
     out += '\n';
@@ -156,6 +186,26 @@ bool Snake::opposite_direction(char c)
     else if(c == 'd') return curr_dir == 'u';
 
     return false;
+}
+
+void Snake::set_cursor_pos(int x, int y)
+{
+    COORD cursor_pos;
+    cursor_pos.X = x;
+    cursor_pos.Y = y;
+    if(!SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor_pos))
+    {
+        exit(-2);
+    }
+
+}
+
+std::pair<int, int> Snake::get_cursor_pos()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi = {};
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    COORD coord = csbi.dwCursorPosition;
+    return std::make_pair(coord.X, coord.Y);
 }
 
 void Snake::sleep()
