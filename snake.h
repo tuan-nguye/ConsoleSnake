@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <string>
 
 class Snake
 {
@@ -40,15 +41,27 @@ class Snake
         };
 
         // speed
-        int speed = 3;
+        int speed = 15;
+
+        // deadeg
+        bool dead = false;
 
         // food
-        std::pair<int, int> food = std::make_pair(10, 10);
+        std::pair<int, int> food;
+
+        // ascii art txt
+        std::string start_img_path = "ascii-art-snek.txt";
 
         // functions
 
+        // what would a game without a proper start screen be
+        void show_start_screen();
+
         // show board
         void show();
+
+        // show score for extra motivation
+        void show_score();
 
         // spawn food at empty and random location
         void spawn_food_random();

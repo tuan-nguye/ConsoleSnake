@@ -4,21 +4,28 @@
 #include <cctype>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "snake.h"
 
 void Snake::run()
 {
-    while(true) {
+    show_start_screen();
+
+    while(!dead) {
         update_direction();
         move();
         show();
+        show_score();
         sleep();
     }
+
+    std::cout << "R I P B O Z O" << '\n';
 }
 
 Snake::Snake()
 {
+    spawn_food_random();
 
     for(auto& pos : snake_body)
     {
@@ -26,6 +33,26 @@ Snake::Snake()
     }
 
     grid[food.first][food.second] = 2;
+}
+
+void Snake::show_start_screen()
+{
+    std::ifstream img_txt(start_img_path);
+    std::string line;
+
+    if(img_txt.is_open())
+    {
+        while(std::getline(img_txt, line))
+        {
+            std::cout << line << '\n';
+        }
+        std::cout.flush();
+    }
+
+    img_txt.close();
+
+    std::cout << "Press any key to continue" << std::endl;
+    getch();
 }
 
 void Snake::show()
@@ -51,12 +78,24 @@ void Snake::show()
     std::cout << out << std::endl;
 }
 
+void Snake::show_score()
+{
+    std::cout << "Score: " << (snake_body.size()-3) * 10 << std::endl;
+}
+
 void Snake::move()
 {
     std::pair<int, int> head = snake_body.front();
     std::pair<int, int> dir = dir_map[curr_dir];
     int x = mod(head.first+dir.first, grid_size), y = mod(head.second+dir.second, grid_size);
     std::pair<int, int> curr(x, y);
+
+    // Deadge, ripbozo
+    if(grid[x][y] == 1)
+    {
+        dead = true;
+        return;
+    }
 
     snake_body.push_front(curr);
     grid[x][y] = 1;
