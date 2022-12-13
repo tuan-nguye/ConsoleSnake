@@ -6,6 +6,10 @@
 #include <thread>
 #include <fstream>
 #include <windows.h>
+#include <chrono>
+#include <thread>
+#include <vector>
+#include <conio.h>
 
 #include "view.h"
 
@@ -24,38 +28,67 @@ void View::start(int grid[20][20])
     show_grid(grid);
 }
 
-void View::end()
+// TODO start screen animation
+void View::show_start_screen()
 {
-    show_end_screen();
-    set_cursor_visibility(true);
+    set_cursor_adapted(grid_size, 0);
+    animate_logo();
+
+    set_cursor_adapted(logo_height, 0);
+    std::cout << "Press any key to continue" << std::endl;
+    std::cout << "Controls: wasd" << std::endl;
+    getch();
+
+    hide_start_screen();
 }
 
-void View::show_start_screen()
+void View::animate_logo()
 {
     // TODO cool animation instead of just printing
     std::ifstream img_txt(start_img_path);
     std::string line;
-    int width = 0;
+    int i = 0;
+    std::vector<std::tuple<int, int, char>> to_show;
 
     if(img_txt.is_open())
     {
         while(std::getline(img_txt, line))
         {
-            std::cout << line << '\n';
-            width = line.length();
+            for(int j = 0; j < line.length(); j++)
+            {
+                char c = line[j];
+                if(c != ' ') to_show.push_back(std::make_tuple(i, j, c));
+            }
+
+            i++;
         }
-        std::cout.flush();
     }
 
     img_txt.close();
+    bool skip = false;
 
-    std::cout << "Press any key to continue" << std::endl;
-    std::cout << "Controls: wasd" << std::endl;
+    while(!to_show.empty())
+    {
+        int rand_idx = rand() % to_show.size();
+        std::tuple<int, int, char> pos = to_show.at(rand_idx);
+        to_show.erase(to_show.begin()+rand_idx);
 
-    // clear starting screen
-    getch();
+        set_cursor_adapted(std::get<0>(pos), std::get<1>(pos));
+        std::cout << std::get<2>(pos);
+        std::cout.flush();
+
+        if(kbhit()) {
+            skip = true;
+            getch();
+        }
+        if(!skip) sleep(1);
+    }
+}
+
+void View::hide_start_screen()
+{
     set_cursor_pos(cursor_offset.first, cursor_offset.second);
-    std::string clear_line(width, chars::empty);
+    std::string clear_line(logo_width, chars::empty);
     std::string clear;
 
     for(int i = 0; i < grid_size; i++)
@@ -64,6 +97,12 @@ void View::show_start_screen()
     }
 
     std::cout << clear << std::endl;
+}
+
+void View::end()
+{
+    show_end_screen();
+    set_cursor_visibility(true);
 }
 
 void View::show_end_screen()
@@ -76,7 +115,7 @@ void View::show_end_screen()
 
 void View::show_grid(int grid[20][20])
 {
-    set_cursor_pos(cursor_offset.first-1, cursor_offset.second-1);
+    set_cursor_by_offset(-1, -1);
 
     std::string out;
     out += char(chars::corner_up_left);
@@ -105,16 +144,6 @@ void View::show_grid(int grid[20][20])
     std::cout << out << std::endl;
 }
 
-void View::update_cell(int x, int y, int char_code)
-{
-    if(x < 0 || x >= grid_size || y < 0 || y >= grid_size) return;
-
-    char c = char(char_code);
-    set_cursor_pos(cursor_offset.first+y*2, cursor_offset.second+x);
-    std::cout << c << c;
-    std::cout.flush();
-}
-
 void View::show_score(int score)
 {
     set_cursor_pos(score_offset.first, score_offset.second);
@@ -127,6 +156,16 @@ void View::set_cursor_pos(int x, int y)
     cursor_pos.X = x;
     cursor_pos.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor_pos);
+}
+
+void View::set_cursor_by_offset(int x, int y)
+{
+    set_cursor_pos(cursor_offset.first+x, cursor_offset.second+y);
+}
+
+void View::set_cursor_adapted(int x, int y)
+{
+    set_cursor_by_offset(y, x);
 }
 
 std::pair<int, int> View::get_cursor_pos()
@@ -144,4 +183,20 @@ void View::set_cursor_visibility(bool visible)
     GetConsoleCursorInfo(out, &cci);
     cci.bVisible = visible;
     SetConsoleCursorInfo(out, &cci);
+}
+
+void View::update_cell(int x, int y, int char_code)
+{
+    if(x < 0 || x >= grid_size || y < 0 || y >= grid_size) return;
+
+    char c = char(char_code);
+    set_cursor_adapted(x, y*2);
+    std::cout << c << c;
+    std::cout.flush();
+}
+
+void View::sleep(int ms)
+{
+    std::chrono::milliseconds timespan(ms);
+    std::this_thread::sleep_for(timespan);
 }

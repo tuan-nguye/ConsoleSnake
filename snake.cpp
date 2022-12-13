@@ -17,9 +17,9 @@ void Snake::run()
         // move snake by one cell and react to cases: food, snake, empty cell
         move();
         // update score
-        view.show_score(score());
+        update_view();
         // sleep depending on the speed variable
-        sleep();
+        sleep(1000/speed);
     }
 
     view.end();
@@ -49,7 +49,7 @@ void Snake::move()
 
     snake_body.push_front(curr);
     grid[x][y] = 1;
-    view.update_cell(x, y, View::chars::snake);
+    cells_to_update.push_back(std::make_tuple(x, y, View::chars::snake));
 
     if(x == food.first && y == food.second)
     {
@@ -59,7 +59,7 @@ void Snake::move()
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
         grid[last.first][last.second] = 0;
-        view.update_cell(last.first, last.second, View::chars::empty);
+        cells_to_update.push_back(std::make_tuple(last.first, last.second, View::chars::empty));
     }
 }
 
@@ -68,13 +68,26 @@ int Snake::mod(int a, int b)
     return (a%b + b) % b;
 }
 
+void Snake::update_view()
+{
+    std::vector<std::tuple<int, int, char>>::iterator it;
+    for(it = cells_to_update.begin(); it != cells_to_update.end();)
+    {
+        std::tuple<int, int, char> pos = *it;
+        view.update_cell(std::get<0>(pos), std::get<1>(pos), std::get<2>(pos));
+        it = cells_to_update.erase(it);
+    }
+
+    view.show_score(score());
+}
+
 void Snake::spawn_food_random()
 {
     std::vector<std::pair<int, int>> free_spaces = get_free_spaces();
     int random_idx = rand() % free_spaces.size();
     food = free_spaces.at(random_idx);
     grid[food.first][food.second] = 2;
-    view.update_cell(food.first, food.second, View::chars::food);
+    cells_to_update.push_back(std::make_tuple(food.first, food.second, View::chars::food));
 }
 
 std::vector<std::pair<int, int>> Snake::get_free_spaces()
@@ -111,9 +124,9 @@ bool Snake::opposite_direction(char c)
     return false;
 }
 
-void Snake::sleep()
+void Snake::sleep(int ms)
 {
-    std::chrono::milliseconds timespan(1000/speed);
+    std::chrono::milliseconds timespan(ms);
     std::this_thread::sleep_for(timespan);
 }
 

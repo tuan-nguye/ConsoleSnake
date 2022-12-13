@@ -15,13 +15,25 @@ class View
 
         int grid_size = 20;
 
-        // reset cursor
+        int logo_width = 80;
+        int logo_height = 13;
+
         void set_cursor_pos(int x, int y);
+
+        // set cursor + offset
+        void set_cursor_by_offset(int x, int y);
+
+        // adapted to windows coords
+        void set_cursor_adapted(int x, int y);
 
         std::pair<int, int> get_cursor_pos();
 
         // every good game needs a proper start screen
         void show_start_screen();
+
+        void animate_logo();
+
+        void hide_start_screen();
 
         // game over
         void show_end_screen();
@@ -30,6 +42,8 @@ class View
         void show_grid(int grid[20][20]);
         
         void set_cursor_visibility(bool visible);
+
+        void sleep(int ms);
 
     public:
         View();

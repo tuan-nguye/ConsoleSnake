@@ -54,11 +54,17 @@ class Snake
         // food
         std::pair<int, int> food;
 
+        // TODO to update
+        std::vector<std::tuple<int, int, char>> cells_to_update;
+
         // functions
+
+        void update_view();
 
         // spawn food at empty and random location
         void spawn_food_random();
 
+        // get all free spaces to spawn food in
         std::vector<std::pair<int, int>> get_free_spaces();
 
         // update direction using last input
@@ -67,13 +73,14 @@ class Snake
         // update position()
         void move();
 
+        // return true if play input is opposite direction
         bool opposite_direction(char c);
 
         // modulo so that negative numbers dont mess up my code
         int mod(int a, int b);
 
         // sleep
-        void sleep();
+        void sleep(int ms);
 
         // calculate score
         int score();
