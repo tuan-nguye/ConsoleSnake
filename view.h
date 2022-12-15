@@ -18,6 +18,12 @@ class View
 
         int logo_width = 80;
         int logo_height = 13;
+        
+        enum border {
+            corner_up_left = 201, corner_up_right = 187, corner_down_left = 200, corner_down_right = 188,
+            horizontal_bar = 205, vertical_bar = 186,
+            empty = 32
+        };
 
         void set_cursor_pos(int x, int y);
 
@@ -33,7 +39,7 @@ class View
         void show_start_screen();
 
         // show board
-        void show_grid(int grid[20][20]);
+        void show_grid(char grid[20][20]);
 
         void animate_logo();
 
@@ -48,18 +54,12 @@ class View
 
     public:
         View();
-        
-        enum chars {
-            corner_up_left = 201, corner_up_right = 187, corner_down_left = 200, corner_down_right = 188,
-            horizontal_bar = 205, vertical_bar = 186, empty = 32,
-            snake = 219, food = 177
-        };
 
-        void start(int grid[20][20]);
+        void start(char grid[20][20]);
 
         void end();        
 
-        void update_row(int row[20], int rowIdx);
+        void update_row(char row[20], int rowIdx);
         
         // show score for extra motivation
         void show_score(int score);

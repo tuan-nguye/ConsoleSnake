@@ -15,8 +15,13 @@ class Snake
         // quadratic grid size
         const int grid_size = 20;
 
+        // grid symbols
+        enum symbol {
+            empty = 32, snake = 219, food = 177
+        };
+
         // saves state of the grid
-        int grid[20][20] = {0};
+        char grid[20][20] = {char(symbol::empty)};
 
         // saves the state of the snake with all occupied points
         // starts with size of 3 in the middle of the grid
@@ -52,7 +57,7 @@ class Snake
         bool dead = false;
 
         // food
-        std::pair<int, int> food;
+        std::pair<int, int> food_pos;
 
         // rows to update
         int rows = 0;

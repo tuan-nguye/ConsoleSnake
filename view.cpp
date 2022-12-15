@@ -9,7 +9,6 @@
 #include <chrono>
 #include <thread>
 #include <vector>
-#include <conio.h>
 
 #include "view.h"
 
@@ -21,7 +20,7 @@ View::View()
     cursor_offset.second++;
 }
 
-void View::start(int grid[20][20])
+void View::start(char grid[20][20])
 {
     set_cursor_visibility(false);
     show_start_screen();
@@ -69,18 +68,22 @@ void View::animate_logo()
 
     while(!to_show.empty())
     {
-        int rand_idx = rand() % to_show.size();
-        std::tuple<int, int, char> pos = to_show.at(rand_idx);
-        to_show.erase(to_show.begin()+rand_idx);
+        for(int i = 0; i < 2; i++)
+        {
+            int rand_idx = rand() % to_show.size();
+            std::tuple<int, int, char> pos = to_show.at(rand_idx);
+            to_show.erase(to_show.begin()+rand_idx);
 
-        set_cursor_adapted(std::get<0>(pos), std::get<1>(pos));
-        std::cout << std::get<2>(pos);
-        std::cout.flush();
+            set_cursor_adapted(std::get<0>(pos), std::get<1>(pos));
+            std::cout << std::get<2>(pos);
+            std::cout.flush();
 
-        if(kbhit()) {
-            skip = true;
-            getch();
+            if(kbhit()) {
+                skip = true;
+                getch();
+            }
         }
+        
         if(!skip) sleep(1);
     }
 }
@@ -88,7 +91,7 @@ void View::animate_logo()
 void View::hide_start_screen()
 {
     set_cursor_pos(cursor_offset.first, cursor_offset.second);
-    std::string clear_line(logo_width, chars::empty);
+    std::string clear_line(logo_width, border::empty);
     std::string clear;
 
     for(int i = 0; i < grid_size; i++)
@@ -113,34 +116,32 @@ void View::show_end_screen()
     getch();
 }
 
-void View::show_grid(int grid[20][20])
+void View::show_grid(char grid[20][20])
 {
     set_cursor_by_offset(-1, -1);
 
     std::string out;
-    out += char(chars::corner_up_left);
-    out.append(grid_size*2, char(chars::horizontal_bar));
-    out += char(chars::corner_up_right);
+    out += char(border::corner_up_left);
+    out.append(grid_size*2, char(border::horizontal_bar));
+    out += char(border::corner_up_right);
     out += '\n';
 
     for(int i = 0; i < grid_size; i++)
     {
-        out += char(chars::vertical_bar);
+        out += char(border::vertical_bar);
 
         for(int j = 0; j < grid_size; j++)
         {
-            if(grid[i][j] == 0) out += "  ";
-            else if(grid[i][j] == 1) out.append(2, char(chars::snake));
-            else if(grid[i][j] == 2) out.append(2, char(chars::food));
+            out.append(2, grid[i][j]);
         }
 
-        out += char(chars::vertical_bar);
+        out += char(border::vertical_bar);
         out += '\n';
     }
 
-    out += char(chars::corner_down_left);
-    out.append(grid_size*2, char(chars::horizontal_bar));
-    out += char(chars::corner_down_right);
+    out += char(border::corner_down_left);
+    out.append(grid_size*2, char(border::horizontal_bar));
+    out += char(border::corner_down_right);
     std::cout << out << std::endl;
 }
 
@@ -185,15 +186,13 @@ void View::set_cursor_visibility(bool visible)
     SetConsoleCursorInfo(out, &cci);
 }
 
-void View::update_row(int row[20], int rowIdx)
+void View::update_row(char row[20], int rowIdx)
 {
     std::string out;
 
-    for(int j = 0; j < grid_size; j++)
+    for(int i = 0; i < grid_size; i++)
     {
-        if(row[j] == 0) out.append(2, char(chars::empty));
-        else if(row[j] == 1) out.append(2, char(chars::snake));
-        else if(row[j] == 2) out.append(2, char(chars::food));
+        out.append(2, row[i]);
     }
 
     set_cursor_adapted(rowIdx, 0);

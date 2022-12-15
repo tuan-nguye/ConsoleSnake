@@ -29,7 +29,7 @@ Snake::Snake()
 {
     for(auto& pos : snake_body)
     {
-        grid[pos.first][pos.second] = 1;
+        grid[pos.first][pos.second] = symbol::snake;
     }
 }
 
@@ -41,24 +41,24 @@ void Snake::move()
     std::pair<int, int> curr(x, y);
 
     // Deadge, ripbozo
-    if(grid[x][y] == 1)
+    if(grid[x][y] == char(symbol::snake))
     {
         dead = true;
         return;
     }
 
     snake_body.push_front(curr);
-    grid[x][y] = 1;
+    grid[x][y] = symbol::snake;
     rows = add_row_to_update(x);
 
-    if(x == food.first && y == food.second)
+    if(x == food_pos.first && y == food_pos.second)
     {
         spawn_food_random();
     } else
     {
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
-        grid[last.first][last.second] = 0;
+        grid[last.first][last.second] = symbol::empty;
         rows = add_row_to_update(last.first);
     }
 }
@@ -89,9 +89,9 @@ void Snake::spawn_food_random()
 {
     std::vector<std::pair<int, int>> free_spaces = get_free_spaces();
     int random_idx = rand() % free_spaces.size();
-    food = free_spaces.at(random_idx);
-    grid[food.first][food.second] = 2;
-    rows = add_row_to_update(food.first);
+    food_pos = free_spaces.at(random_idx);
+    grid[food_pos.first][food_pos.second] = symbol::food;
+    rows = add_row_to_update(food_pos.first);
 }
 
 std::vector<std::pair<int, int>> Snake::get_free_spaces()
