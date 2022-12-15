@@ -39,7 +39,7 @@ class View
         void show_start_screen();
 
         // show board
-        void show_grid(char grid[20][20]);
+        void show_grid(unsigned char grid[20][20]);
 
         void animate_logo();
 
@@ -55,11 +55,11 @@ class View
     public:
         View();
 
-        void start(char grid[20][20]);
+        void start(unsigned char grid[20][20]);
 
         void end();        
 
-        void update_row(char row[20], int rowIdx);
+        void update_row(unsigned char row[20], int rowIdx);
         
         // show score for extra motivation
         void show_score(int score);

@@ -20,7 +20,7 @@ View::View()
     cursor_offset.second++;
 }
 
-void View::start(char grid[20][20])
+void View::start(unsigned char grid[20][20])
 {
     set_cursor_visibility(false);
     show_start_screen();
@@ -116,7 +116,7 @@ void View::show_end_screen()
     getch();
 }
 
-void View::show_grid(char grid[20][20])
+void View::show_grid(unsigned char grid[20][20])
 {
     set_cursor_by_offset(-1, -1);
 
@@ -186,7 +186,7 @@ void View::set_cursor_visibility(bool visible)
     SetConsoleCursorInfo(out, &cci);
 }
 
-void View::update_row(char row[20], int rowIdx)
+void View::update_row(unsigned char row[20], int rowIdx)
 {
     std::string out;
 

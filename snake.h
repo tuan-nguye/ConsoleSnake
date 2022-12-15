@@ -21,7 +21,7 @@ class Snake
         };
 
         // saves state of the grid
-        char grid[20][20] = {char(symbol::empty)};
+        unsigned char grid[20][20] = {char(symbol::empty)};
 
         // saves the state of the snake with all occupied points
         // starts with size of 3 in the middle of the grid

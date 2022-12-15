@@ -41,7 +41,7 @@ void Snake::move()
     std::pair<int, int> curr(x, y);
 
     // Deadge, ripbozo
-    if(grid[x][y] == char(symbol::snake))
+    if(grid[x][y] == symbol::snake)
     {
         dead = true;
         return;
