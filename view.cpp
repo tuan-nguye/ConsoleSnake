@@ -185,13 +185,19 @@ void View::set_cursor_visibility(bool visible)
     SetConsoleCursorInfo(out, &cci);
 }
 
-void View::update_cell(int x, int y, int char_code)
+void View::update_row(int row[20], int rowIdx)
 {
-    if(x < 0 || x >= grid_size || y < 0 || y >= grid_size) return;
+    std::string out;
 
-    char c = char(char_code);
-    set_cursor_adapted(x, y*2);
-    std::cout << c << c;
+    for(int j = 0; j < grid_size; j++)
+    {
+        if(row[j] == 0) out.append(2, char(chars::empty));
+        else if(row[j] == 1) out.append(2, char(chars::snake));
+        else if(row[j] == 2) out.append(2, char(chars::food));
+    }
+
+    set_cursor_adapted(rowIdx, 0);
+    std::cout << out;
     std::cout.flush();
 }
 

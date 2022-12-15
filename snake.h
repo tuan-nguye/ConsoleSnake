@@ -54,12 +54,16 @@ class Snake
         // food
         std::pair<int, int> food;
 
-        // TODO to update
-        std::vector<std::tuple<int, int, char>> cells_to_update;
+        // rows to update
+        int rows = 0;
 
         // functions
 
         void update_view();
+
+        int add_row_to_update(int row);
+
+        void reset_rows_to_update();
 
         // spawn food at empty and random location
         void spawn_food_random();

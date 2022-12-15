@@ -49,7 +49,7 @@ void Snake::move()
 
     snake_body.push_front(curr);
     grid[x][y] = 1;
-    cells_to_update.push_back(std::make_tuple(x, y, View::chars::snake));
+    rows = add_row_to_update(x);
 
     if(x == food.first && y == food.second)
     {
@@ -59,7 +59,7 @@ void Snake::move()
         std::pair<int, int> last = snake_body.back();
         snake_body.pop_back();
         grid[last.first][last.second] = 0;
-        cells_to_update.push_back(std::make_tuple(last.first, last.second, View::chars::empty));
+        rows = add_row_to_update(last.first);
     }
 }
 
@@ -70,15 +70,19 @@ int Snake::mod(int a, int b)
 
 void Snake::update_view()
 {
-    std::vector<std::tuple<int, int, char>>::iterator it;
-    for(it = cells_to_update.begin(); it != cells_to_update.end();)
-    {
-        std::tuple<int, int, char> pos = *it;
-        view.update_cell(std::get<0>(pos), std::get<1>(pos), std::get<2>(pos));
-        it = cells_to_update.erase(it);
-    }
-
+    for(int i = 0; i < 32; i++) if(rows & (1<<i)) view.update_row(grid[i], i);
+    reset_rows_to_update();
     view.show_score(score());
+}
+
+int Snake::add_row_to_update(int row)
+{
+    return rows | (1<<row);
+}
+
+void Snake::reset_rows_to_update()
+{
+    rows = 0;
 }
 
 void Snake::spawn_food_random()
@@ -87,7 +91,7 @@ void Snake::spawn_food_random()
     int random_idx = rand() % free_spaces.size();
     food = free_spaces.at(random_idx);
     grid[food.first][food.second] = 2;
-    cells_to_update.push_back(std::make_tuple(food.first, food.second, View::chars::food));
+    rows = add_row_to_update(food.first);
 }
 
 std::vector<std::pair<int, int>> Snake::get_free_spaces()

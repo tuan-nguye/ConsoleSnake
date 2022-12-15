@@ -1,5 +1,6 @@
 #include <string>
 #include <utility>
+#include <vector>
 
 class View
 {
@@ -31,15 +32,15 @@ class View
         // every good game needs a proper start screen
         void show_start_screen();
 
+        // show board
+        void show_grid(int grid[20][20]);
+
         void animate_logo();
 
         void hide_start_screen();
 
         // game over
         void show_end_screen();
-
-        // show board
-        void show_grid(int grid[20][20]);
         
         void set_cursor_visibility(bool visible);
 
@@ -55,10 +56,10 @@ class View
         };
 
         void start(int grid[20][20]);
+
         void end();        
 
-        // update single cells
-        void update_cell(int x, int y, int char_code);
+        void update_row(int row[20], int rowIdx);
         
         // show score for extra motivation
         void show_score(int score);
