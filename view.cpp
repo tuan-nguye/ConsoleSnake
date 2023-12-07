@@ -112,7 +112,7 @@ void View::show_end_screen()
 {
     set_cursor_pos(score_offset.first, score_offset.second+1);
     std::cout << "R I P B O Z O" << '\n';
-    std::cout << "Press any to exit" << std::endl;
+    std::cout << "Press any key to exit" << std::endl;
     getch();
 }
 
